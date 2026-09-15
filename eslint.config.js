@@ -23,7 +23,8 @@ export default tseslint.config(
         },
     },
     {
-        // zx scripts run with zx's globals injected.
+        // Build scripts: Node globals, plus the ones zx injects into the
+        // scripts it runs.
         files: ['scripts/**/*.js'],
         languageOptions: {
             globals: {
@@ -33,6 +34,7 @@ export default tseslint.config(
                 fs: 'readonly',
                 path: 'readonly',
                 process: 'readonly',
+                URL: 'readonly',
             },
         },
     },

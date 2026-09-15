@@ -16,10 +16,13 @@ export const Default: StoryObj = {
 };
 
 /*
- Guards the remount on locale change. The component counts clicks in state, so
- the assertion only holds on a fresh mount: switch the locale in the toolbar
- and, if the old mount survives the switch, this click lands on a counter that
- is already at 1 and the button reads 2.
+ A stateful fixture for checking locale switches by hand: click the button,
+ change the locale in the toolbar, and the story remounts, so the counter
+ starts over and this assertion holds again in the new language.
+
+ It is a smoke test that a play function runs under the decorator and the
+ loader. It does not guard when the remount happens, which is only observable
+ against Storybook's render loop, not from inside a story.
 */
 export const Counter: StoryObj = {
     play: async ({canvasElement}) => {

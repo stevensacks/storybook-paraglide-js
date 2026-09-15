@@ -13,21 +13,26 @@ import {resolveLocale} from './locale';
 let appliedLocale: string | undefined;
 
 /**
- * Remount the story whenever the locale changes, so it starts from a clean
- * slate instead of keeping the state the previous locale left behind.
- *
- * This is a loader rather than an effect on purpose. Loaders run in the first
- * phase of a render, before the story mounts and before the play function;
- * Storybook's `useEffect` runs on STORY_RENDERED, which is after both. Asking
- * for the remount from an effect therefore let the old mount re-render under
- * the new locale and run the play function against state the previous run had
- * left in it, and only then tore it down. Emitting here aborts that render
- * before anything is painted, so a locale change produces exactly one render:
- * the fresh mount, whose play function starts from initial state.
+ * Remount the story whenever the locale changes, so components that captured
+ * the previous locale's strings in state or a memo are rebuilt.
  *
  * A re-render alone is not enough: it is fine for components that call `m.*`
- * while rendering, but not for ones that cache strings in state or a memo.
+ * while rendering, but not for ones that cache what `m.*` returned.
  * FORCE_REMOUNT is renderer agnostic, unlike resetting a React key.
+ *
+ * This is a loader rather than an effect on purpose. Loaders run in the first
+ * phase of a render, before the story mounts; Storybook fires decorator
+ * effects from its STORY_RENDERED listener, in the `completed` phase. Asking
+ * for the remount from an effect cost an extra render per locale change: the
+ * previous mount was re-rendered under the new locale, held on screen for the
+ * ~100ms floor of `waitForAnimations()` in the `completing` phase, and emitted
+ * its own STORY_RENDERED and STORY_FINISHED before being torn down. Emitting
+ * here aborts that render during `loading` instead, so a locale change
+ * produces one render rather than two and nothing is painted from the mount
+ * that is about to be discarded.
+ *
+ * The remount resets state inside the story's component tree and nothing else.
+ * Whatever a story keeps outside it survives, as it survives any remount.
  */
 export const remountOnLocaleChange = (context: StoryContext<Renderer>) => {
     const resolved = resolveLocale(context);

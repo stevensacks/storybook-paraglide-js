@@ -184,9 +184,11 @@ configures (`url`, `cookie`, `localStorage`) is bypassed inside Storybook, so yo
 by the toolbar and by story `locale` parameters.
 
 After the locale changes, the addon remounts the story so cached strings are discarded. The remount is
-requested before the story renders, so nothing is ever painted from the previous mount and a story's play
-function runs once, against freshly mounted component state. For this to work, call your messages during
-render:
+requested before the story renders, so the previous mount is never painted under the new locale.
+
+The remount resets state held in the story's component tree. State that lives outside it, in a module-level
+store, a singleton, or anything else that survives unmounting, is not reset, so a play function that depends
+on such state has to reset it itself. For the remount to do its job, call your messages during render:
 
 ```tsx
 // Good - re-evaluated on every render
