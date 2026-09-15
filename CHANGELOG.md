@@ -1,3 +1,15 @@
+# v10.0.3 (Tue Sep 15 2026)
+
+#### 🐛 Bug Fix
+
+- chore: bump storybook-i18n to 10.1.2 and migrate to pnpm [#3](https://github.com/stevensacks/storybook-paraglide-js/pull/3) ([@stevensacks](https://github.com/stevensacks))
+
+#### Authors: 1
+
+- Steven Sacks ([@stevensacks](https://github.com/stevensacks))
+
+---
+
 # v10.0.2 (Tue Sep 15 2026)
 
 #### 🐛 Bug Fix
