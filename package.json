@@ -45,6 +45,7 @@
     "scripts": {
         "prebuild": "node -e \"fs.rmSync('./dist', { recursive: true, force: true })\"",
         "build": "tsup",
+        "postbuild": "node scripts/check-exports.js",
         "prebuild-storybook": "npm run paraglide",
         "build-storybook": "storybook build",
         "build:watch": "npm run build -- --watch",
@@ -52,6 +53,7 @@
         "format": "prettier --write .",
         "lint": "eslint --cache .",
         "lint:fix": "npm run lint -- --fix",
+        "prepack": "node scripts/check-exports.js",
         "paraglide": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
         "paraglide:watch": "npm run paraglide -- --watch",
         "prerelease": "zx scripts/prepublish-checks.js",
