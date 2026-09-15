@@ -183,8 +183,10 @@ mechanism Paraglide documents for externally controlled locale resolution. Whate
 configures (`url`, `cookie`, `localStorage`) is bypassed inside Storybook, so your stories are driven purely
 by the toolbar and by story `locale` parameters.
 
-After the locale changes, the addon remounts the story so cached strings are discarded. For this to work,
-call your messages during render:
+After the locale changes, the addon remounts the story so cached strings are discarded. The remount is
+requested before the story renders, so nothing is ever painted from the previous mount and a story's play
+function runs once, against freshly mounted component state. For this to work, call your messages during
+render:
 
 ```tsx
 // Good - re-evaluated on every render
