@@ -8,3 +8,4 @@ build-storybook.log
 .npmrc
 yarn-error.log
 src/paraglide/
+.eslintcache

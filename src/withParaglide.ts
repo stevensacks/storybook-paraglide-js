@@ -54,24 +54,24 @@ parameters: {
     let current: string | undefined;
 
     if (runtime) {
-        const resolved: string = locale || runtime.baseLocale;
-        current = resolved;
+        let applied: string = locale || runtime.baseLocale;
 
-        if (!isKnownLocale(runtime, current)) {
+        if (!isKnownLocale(runtime, applied)) {
             console.warn(
-                `storybook-paraglide-js: '${current}' is not one of the locales compiled into your Paraglide project (${runtime.locales.join(', ')}). Falling back to '${runtime.baseLocale}'.`,
+                `storybook-paraglide-js: '${applied}' is not one of the locales compiled into your Paraglide project (${runtime.locales.join(', ')}). Falling back to '${runtime.baseLocale}'.`,
             );
-            current = runtime.baseLocale;
+            applied = runtime.baseLocale;
         }
 
         // Take over locale resolution entirely, so whichever strategy the
         // project configures (url, cookie, localStorage) is bypassed here.
-        const applied = current;
         runtime.overwriteGetLocale(() => applied);
 
         if (paraglide.setDocumentAttributes !== false) {
             applyDocumentAttributes(runtime, applied);
         }
+
+        current = applied;
     }
 
     useEffect(() => {

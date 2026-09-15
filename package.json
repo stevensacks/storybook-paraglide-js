@@ -53,9 +53,10 @@
         "lint": "eslint --cache .",
         "lint:fix": "npm run lint -- --fix",
         "paraglide": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
+        "paraglide:watch": "npm run paraglide -- --watch",
         "prerelease": "zx scripts/prepublish-checks.js",
         "release": "npm run build && auto shipit",
-        "start": "run-p build:watch \"storybook --quiet\"",
+        "start": "run-p build:watch paraglide:watch \"storybook --quiet\"",
         "prestorybook": "npm run paraglide",
         "storybook": "storybook dev -p 6006",
         "test": "echo \"Error: no test specified\" && exit 1"

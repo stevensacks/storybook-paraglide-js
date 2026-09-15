@@ -42,39 +42,34 @@ Insert this addon into your addons array:
 
 ### Compile your messages
 
-Storybook needs the generated Paraglide runtime to exist before it starts. If your app already compiles
-Paraglide through a bundler plugin, add the same plugin to Storybook's builder config. For Vite based
-frameworks, that is `viteFinal` in `.storybook/main.ts`:
-
-```typescript
-import {defineMain} from '@storybook/react-vite/node';
-import {paraglideVitePlugin} from '@inlang/paraglide-js';
-import {mergeConfig} from 'vite';
-
-export default defineMain({
-    // ...the rest of your config
-    viteFinal: (config) =>
-        mergeConfig(config, {
-            plugins: [
-                paraglideVitePlugin({
-                    project: './project.inlang',
-                    outdir: './src/paraglide',
-                }),
-            ],
-        }),
-});
-```
-
-It is also worth adding a compile script so a clean checkout works on the first run:
+Storybook needs the generated Paraglide runtime to exist before it starts, so compile it in a pre-step:
 
 ```json
 {
     "scripts": {
         "paraglide": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
-        "prestorybook": "npm run paraglide"
+        "paraglide:watch": "npm run paraglide -- --watch",
+        "prestorybook": "npm run paraglide",
+        "prebuild-storybook": "npm run paraglide",
+        "storybook": "storybook dev -p 6006"
     }
 }
 ```
+
+To pick up message edits without restarting, run the compiler's watch mode alongside Storybook:
+
+```bash
+npm-run-all --parallel paraglide:watch storybook
+```
+
+> [!IMPORTANT]
+> Do **not** add `paraglideVitePlugin` to Storybook's `viteFinal`. The plugin recompiles at `buildStart`,
+> rewriting files underneath Vite while it is still optimizing dependencies. Vite then produces a second
+> dependency cache, the preview ends up with two copies of React, and every story fails with
+> `Invalid hook call. Hooks can only be called inside of the body of a function component.`
+>
+> Compile with the CLI instead, as shown above. Your application build can keep using the Vite plugin
+> normally - this only applies to Storybook.
 
 ---
 
@@ -257,6 +252,12 @@ For `@storybook/nextjs`, do the same in `webpackFinal` via `config.resolve.alias
 
 The simplest way to avoid this entirely is to import the runtime by relative path in
 `.storybook/preview.ts`, as shown above - the alias then never enters the picture.
+
+### `Invalid hook call` / every story fails to render
+
+If you added `paraglideVitePlugin` to Storybook's `viteFinal`, remove it. The plugin rewrites the generated
+output while Vite is still optimizing dependencies, which leaves the preview with two copies of React. See
+the note under [Compile your messages](#compile-your-messages).
 
 ---
 
