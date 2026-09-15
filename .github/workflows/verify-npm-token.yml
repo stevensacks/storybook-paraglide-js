@@ -1,0 +1,77 @@
+# TEMPORARY. Verifies the NPM_TOKEN secret without publishing anything.
+# Delete this file once you have the result.
+name: verify-npm-token
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+
+      - name: Versions
+        run: |
+          echo "node $(node -v) / npm $(npm -v)"
+          echo "npm >= 11.5.1 is required for trusted publishing (OIDC)"
+
+      - run: npm ci
+      - run: npm run build
+
+      # Safety: the probe below relies on the version ALREADY existing on npm so
+      # the registry rejects it. If someone bumps the version, abort instead of
+      # publishing for real.
+      - name: Guard - local version must already be published
+        run: |
+          LOCAL=$(node -p "require('./package.json').version")
+          REMOTE=$(npm view storybook-paraglide-js version)
+          echo "local=$LOCAL published=$REMOTE"
+          if [ "$LOCAL" != "$REMOTE" ]; then
+            echo "::error::ABORT - local ($LOCAL) != published ($REMOTE). The probe would publish for real."
+            exit 1
+          fi
+
+      - name: 1. Is the token valid? (npm whoami)
+        continue-on-error: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm whoami
+
+      - name: 2. What can the token reach? (npm access list packages)
+        continue-on-error: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm access list packages
+
+      - name: 3. Can it actually publish? (expects E409, publishes nothing)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set +e
+          out=$(npm publish 2>&1); code=$?
+          echo "$out"
+          echo "---"
+          if [ $code -eq 0 ]; then
+            echo "::error::UNEXPECTED - publish succeeded. Check the registry."
+            exit 1
+          elif echo "$out" | grep -qiE "E409|cannot publish over|previously published"; then
+            echo "::notice::PASS - token authenticated and has publish rights (duplicate version rejected, nothing written)."
+            exit 0
+          elif echo "$out" | grep -qiE "E401|ENEEDAUTH|Unauthorized"; then
+            echo "::error::FAIL - token is invalid or expired."
+            exit 1
+          elif echo "$out" | grep -qiE "E403|Forbidden"; then
+            echo "::error::FAIL - token authenticated but lacks write access to this package."
+            exit 1
+          elif echo "$out" | grep -qiE "E404|Not Found"; then
+            echo "::error::FAIL - 404 on publish means unauthenticated or out-of-scope token."
+            exit 1
+          else
+            echo "::error::FAIL - unrecognized error, see output above."
+            exit 1
+          fi
