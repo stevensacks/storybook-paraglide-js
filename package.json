@@ -1,6 +1,6 @@
 {
     "name": "storybook-paraglide-js",
-    "version": "10.0.1",
+    "version": "10.0.2",
     "description": "Add Paraglide JS support to Storybook",
     "keywords": [
         "storybook-addons",
