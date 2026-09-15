@@ -48,23 +48,23 @@
         "postbuild": "node scripts/check-exports.js",
         "prebuild-storybook": "npm run paraglide",
         "build-storybook": "storybook build",
-        "build:watch": "npm run build -- --watch",
+        "build:watch": "pnpm run build --watch",
         "eject-ts": "zx scripts/eject-typescript.js",
         "format": "prettier --write .",
         "lint": "eslint --cache .",
-        "lint:fix": "npm run lint -- --fix",
+        "lint:fix": "pnpm lint --fix",
         "prepack": "node scripts/check-exports.js",
         "paraglide": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
         "paraglide:watch": "npm run paraglide -- --watch",
         "prerelease": "zx scripts/prepublish-checks.js",
-        "release": "set -a && . ./.env && set +a && npm run build && auto shipit",
+        "release": "set -a && . ./.env && set +a && pnpm run build && auto shipit",
         "start": "run-p build:watch paraglide:watch \"storybook --quiet\"",
         "prestorybook": "npm run paraglide",
         "storybook": "storybook dev -p 6006",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {
-        "storybook-i18n": "^10.1.1"
+        "storybook-i18n": "^10.1.2"
     },
     "devDependencies": {
         "@eslint/js": "^9.36.0",
@@ -126,5 +126,11 @@
     },
     "overrides": {
         "storybook": "$storybook"
+    },
+    "packageManager": "pnpm@10.0.0",
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "esbuild"
+        ]
     }
 }
