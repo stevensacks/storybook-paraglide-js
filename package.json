@@ -55,7 +55,7 @@
         "paraglide": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
         "paraglide:watch": "npm run paraglide -- --watch",
         "prerelease": "zx scripts/prepublish-checks.js",
-        "release": "npm run build && auto shipit",
+        "release": "set -a && . ./.env && set +a && npm run build && auto shipit",
         "start": "run-p build:watch paraglide:watch \"storybook --quiet\"",
         "prestorybook": "npm run paraglide",
         "storybook": "storybook dev -p 6006",
