@@ -1,0 +1,20 @@
+{
+    "$schema": "https://inlang.com/schema/inlang-message-format",
+    "hello": "مرحبا",
+    "world": "العالم",
+    "click": [
+        {
+            "declarations": [
+                "input count",
+                "local countPlural = count: plural"
+            ],
+            "selectors": ["countPlural"],
+            "match": {
+                "countPlural=one": "نقرت مرة واحدة",
+                "countPlural=two": "نقرت مرتين",
+                "countPlural=few": "نقرت {count} مرات",
+                "countPlural=*": "نقرت {count} مرة"
+            }
+        }
+    ]
+}

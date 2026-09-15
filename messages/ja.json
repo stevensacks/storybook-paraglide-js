@@ -1,0 +1,17 @@
+{
+    "$schema": "https://inlang.com/schema/inlang-message-format",
+    "hello": "こんにちは",
+    "world": "世界",
+    "click": [
+        {
+            "declarations": [
+                "input count",
+                "local countPlural = count: plural"
+            ],
+            "selectors": ["countPlural"],
+            "match": {
+                "countPlural=*": "{count} 回クリックしました"
+            }
+        }
+    ]
+}

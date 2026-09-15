@@ -1,0 +1,18 @@
+{
+    "$schema": "https://inlang.com/schema/inlang-message-format",
+    "hello": "Bonjour",
+    "world": "le monde",
+    "click": [
+        {
+            "declarations": [
+                "input count",
+                "local countPlural = count: plural"
+            ],
+            "selectors": ["countPlural"],
+            "match": {
+                "countPlural=one": "Cliqué {count} fois",
+                "countPlural=*": "Cliqué {count} fois"
+            }
+        }
+    ]
+}
