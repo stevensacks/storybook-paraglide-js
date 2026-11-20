@@ -1,7 +1,9 @@
 import {definePreview} from '@storybook/react-vite';
+import paraglideAddon from '../src';
 import * as runtime from '../src/paraglide/runtime';
 
 export default definePreview({
+    addons: [paraglideAddon()],
     initialGlobals: {
         locale: 'en',
         locales: {
